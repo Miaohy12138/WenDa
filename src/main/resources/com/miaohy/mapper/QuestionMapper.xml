@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.miaohy.dao.QuestionMapper">
+  <resultMap id="BaseResultMap" type="com.miaohy.pojo.Question">
+    <!--@mbg.generated-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="createdDate" jdbcType="TIMESTAMP" property="createddate" />
+    <result column="userId" jdbcType="INTEGER" property="userid" />
+    <result column="commentCount" jdbcType="INTEGER" property="commentcount" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, title, content, createdDate, userId, commentCount
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from question
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from question
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.miaohy.pojo.Question">
+    <!--@mbg.generated-->
+    insert into question (id, title, content, 
+      createdDate, userId, commentCount
+      )
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{createddate,jdbcType=TIMESTAMP}, #{userid,jdbcType=INTEGER}, #{commentcount,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.miaohy.pojo.Question">
+    <!--@mbg.generated-->
+    insert into question
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="createddate != null">
+        createdDate,
+      </if>
+      <if test="userid != null">
+        userId,
+      </if>
+      <if test="commentcount != null">
+        commentCount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createddate != null">
+        #{createddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="commentcount != null">
+        #{commentcount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.miaohy.pojo.Question">
+    <!--@mbg.generated-->
+    update question
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createddate != null">
+        createdDate = #{createddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userid != null">
+        userId = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="commentcount != null">
+        commentCount = #{commentcount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.miaohy.pojo.Question">
+    <!--@mbg.generated-->
+    update question
+    set title = #{title,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      createdDate = #{createddate,jdbcType=TIMESTAMP},
+      userId = #{userid,jdbcType=INTEGER},
+      commentCount = #{commentcount,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <sql id="table">question</sql>
+  <sql id="selectFields">id, title, content, commentCount,createdDate,userId
+    </sql>
+  <select id="selectLatestQuestions" resultType="com.miaohy.pojo.Question">
+    SELECT
+    <include refid="selectFields" />
+    FROM
+    <include refid="table" />
+    <where>
+      <if test="userId != 0">
+        userId = #{userId}
+      </if>
+    </where>
+
+    ORDER BY id DESC
+    LIMIT #{offset},#{limit}
+
+  </select>
+</mapper>

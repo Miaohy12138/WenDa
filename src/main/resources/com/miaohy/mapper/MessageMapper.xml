@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.miaohy.dao.MessageMapper">
+  <resultMap id="BaseResultMap" type="com.miaohy.pojo.Message">
+    <!--@mbg.generated-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="fromId" jdbcType="INTEGER" property="fromid" />
+    <result column="toId" jdbcType="INTEGER" property="toid" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <result column="createdDate" jdbcType="TIMESTAMP" property="createddate" />
+    <result column="hasRead" jdbcType="INTEGER" property="hasread" />
+    <result column="conversationId" jdbcType="VARCHAR" property="conversationid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, fromId, toId, content, createddate, hasRead, conversationId
+  </sql>
+  <sql id="noIdColumn">
+    fromId, toId, content, createddate, hasRead, conversationId
+
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from message
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from message
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.miaohy.pojo.Message" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into message (fromId, toId, content, 
+      createdDate, hasRead, conversationId
+      )
+    values (#{fromid,jdbcType=INTEGER}, #{toid,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR}, 
+      #{createddate,jdbcType=TIMESTAMP}, #{hasread,jdbcType=INTEGER}, #{conversationid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.miaohy.pojo.Message" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into message
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="fromid != null">
+        fromId,
+      </if>
+      <if test="toid != null">
+        toId,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="createddate != null">
+        createdDate,
+      </if>
+      <if test="hasread != null">
+        hasRead,
+      </if>
+      <if test="conversationid != null">
+        conversationId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="fromid != null">
+        #{fromid,jdbcType=INTEGER},
+      </if>
+      <if test="toid != null">
+        #{toid,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="createddate != null">
+        #{createddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="hasread != null">
+        #{hasread,jdbcType=INTEGER},
+      </if>
+      <if test="conversationid != null">
+        #{conversationid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.miaohy.pojo.Message">
+    <!--@mbg.generated-->
+    update message
+    <set>
+      <if test="fromid != null">
+        fromId = #{fromid,jdbcType=INTEGER},
+      </if>
+      <if test="toid != null">
+        toId = #{toid,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="createddate != null">
+        createdDate = #{createddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="hasread != null">
+        hasRead = #{hasread,jdbcType=INTEGER},
+      </if>
+      <if test="conversationid != null">
+        conversationId = #{conversationid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.miaohy.pojo.Message">
+    <!--@mbg.generated-->
+    update message
+    set fromId = #{fromid,jdbcType=INTEGER},
+      toId = #{toid,jdbcType=INTEGER},
+      content = #{content,jdbcType=LONGVARCHAR},
+      createdDate = #{createddate,jdbcType=TIMESTAMP},
+      hasRead = #{hasread,jdbcType=INTEGER},
+      conversationId = #{conversationid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getConverstationList" resultType="com.miaohy.pojo.Message">
+      select <include refid="noIdColumn"/>,count(id) as id from
+  (select * from message where fromId =#{param1}  or toId = #{param1}  order By id desc) tt
+  group by conversationId order by createdDate desc limit #{param2} ,#{param3}
+  </select>
+  <select id="getConversationUnreadCount" resultType="int">
+    select count(id) from coder.message where hasRead =0 and toId = #{param1}  and conversationId = #{param2}
+  </select>
+
+  <select id="getConversationDetail" resultType="com.miaohy.pojo.Message">
+    select * from coder.message
+    where conversationId = #{param1} order by id desc limit #{param2} ,#{param3}
+  </select>
+</mapper>

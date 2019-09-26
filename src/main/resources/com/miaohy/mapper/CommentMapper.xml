@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.miaohy.dao.CommentMapper">
+  <resultMap id="BaseResultMap" type="com.miaohy.pojo.Comment">
+    <!--@mbg.generated-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <result column="userId" jdbcType="INTEGER" property="userId" />
+    <result column="entityId" jdbcType="INTEGER" property="entityId" />
+    <result column="entityType" jdbcType="INTEGER" property="entityType" />
+    <result column="createdDate" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, content, userId, entityId, entityType, createdDate, `status`
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from comment
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from comment
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.miaohy.pojo.Comment" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into comment (content, userId, entityId,
+      entityType, createdDate, `status`
+      )
+    values (#{content,jdbcType=LONGVARCHAR}, #{userId,jdbcType=INTEGER}, #{entityId,jdbcType=INTEGER}, 
+      #{entityType,jdbcType=INTEGER}, #{createdDate,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.miaohy.pojo.Comment" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into comment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="content != null">
+        content,
+      </if>
+      <if test="userId != null">
+        userId,
+      </if>
+      <if test="entityId != null">
+        entityId,
+      </if>
+      <if test="entityType != null">
+        entityType,
+      </if>
+      <if test="createdDate != null">
+        createddate,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="entityId != null">
+        #{entityId,jdbcType=INTEGER},
+      </if>
+      <if test="entityType != null">
+        #{entityType,jdbcType=INTEGER},
+      </if>
+      <if test="createdDate != null">
+        #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.miaohy.pojo.Comment">
+    <!--@mbg.generated-->
+    update comment
+    <set>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="userId != null">
+        userId = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="entityId != null">
+        entityId = #{entityId,jdbcType=INTEGER},
+      </if>
+      <if test="entityType != null">
+        entityType = #{entityType,jdbcType=INTEGER},
+      </if>
+      <if test="createdDate != null">
+        createdDate = #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.miaohy.pojo.Comment">
+    <!--@mbg.generated-->
+    update comment
+    set content = #{content,jdbcType=LONGVARCHAR},
+      userId = #{userId,jdbcType=INTEGER},
+      entityId = #{entityId,jdbcType=INTEGER},
+      entityType = #{entityType,jdbcType=INTEGER},
+      createdDate = #{createdDate,jdbcType=TIMESTAMP},
+      `status` = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getCommentList" resultType="com.miaohy.pojo.Comment">
+
+    select
+    <include refid="Base_Column_List"/>
+     from coder.comment
+    <where>
+      <if test="content != null">
+       `content` = #{content,jdbcType=LONGVARCHAR}
+      </if>
+      <if test="userId != null">
+        and userId = #{userId,jdbcType=INTEGER}
+      </if>
+      <if test="entityId != null">
+        and entityId = #{entityId,jdbcType=INTEGER}
+      </if>
+      <if test="entityType != null">
+        and entityType = #{entityType,jdbcType=INTEGER}
+      </if>
+      <if test="createdDate != null">
+        and createdDate = #{createdDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="status != null">
+        and `status` = #{status,jdbcType=INTEGER}
+      </if>
+
+    </where>
+
+  </select>
+  <select id="getCommentCount" resultType="int">
+    select count (id) from coder.comment
+    <where>
+      <if test="entityId != null">
+        entity_id = #{entityId,jdbcType=INTEGER}
+      </if>
+      <if test="entityType != null">
+        and entity_type = #{entityType,jdbcType=INTEGER}
+      </if>
+    </where>
+
+  </select>
+</mapper>
