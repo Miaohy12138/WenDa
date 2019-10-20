@@ -18,6 +18,7 @@ public class EventProducer {
     JedisAdapter jedisAdapter;
 
     public boolean fireEvent(EventModel eventModel){
+
         try{
             String json = JSONObject.toJSONString(eventModel);
             String key = RedisKeyUtil.getEventQueueKey();

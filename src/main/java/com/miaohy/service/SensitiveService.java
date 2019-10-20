@@ -10,20 +10,24 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class SensitiveService implements InitializingBean {
 
+    private static final String DEFAULT_REPLACEMENT = "***";
     private Node root = new Node();
 
-    private static final String DEFAULT_REPLACEMENT = "***";
+    public static void main(String[] args) {
+        SensitiveService s = new SensitiveService();
+        s.addWord("色情");
+        s.addWord("呵呵");
+        System.out.print(s.filter("你好色情是不是呵 呵"));
+    }
 
-    private void addWord(String lineTxt){
+    private void addWord(String lineTxt) {
         Node temp = root;
 
         for (int i = 0; i < lineTxt.length(); i++) {
@@ -33,19 +37,20 @@ public class SensitiveService implements InitializingBean {
                 continue;
             }
             Node node = temp.getSubNode(character);
-            if(node==null){
+            if (node == null) {
                 node = new Node();
-                temp.addSubNode(character,node);
+                temp.addSubNode(character, node);
             }
 
             temp = node;
 
-            if(i==lineTxt.length()-1){
+            if (i == lineTxt.length() - 1) {
                 temp.setKeyWordEnd(true);
             }
         }
     }
-    public String filter(String text){
+
+    public String filter(String text) {
         if (StringUtils.isBlank(text)) {
             return text;
         }
@@ -55,54 +60,63 @@ public class SensitiveService implements InitializingBean {
         int begin = 0;
         int position = 0;
 
-        while(position<text.length()){
+        while (position < text.length()) {
             char c = text.charAt(position);
-            if(isSymbol(c)){
-                if(tempNode ==root){
+
+            if (isSymbol(c)) {
+                if (tempNode == root) {
                     sb.append(c);
                     begin++;
                 }
                 position++;
                 continue;
             }
+
             tempNode = tempNode.getSubNode(c);
-            if(tempNode==null){
+            if (tempNode == null) {
                 sb.append(text.charAt(begin));
-                position = begin+1;
+                position = begin + 1;
                 begin = position;
                 tempNode = root;
 
-            }else if(tempNode.isKeyWordEnd()){
+            } else if (tempNode.isKeyWordEnd()) {
                 sb.append(replacement);
-                position = position +1;
+                position = position + 1;
                 begin = position;
                 tempNode = root;
-            }else {
+            } else {
                 position++;
             }
         }
+
         sb.append(text.substring(begin));
-
         return sb.toString();
+
     }
+    public void fun() throws IOException {
+        FileReader is  = new FileReader(new File("sdf"));
+        BufferedReader bfr = new BufferedReader(is);
+        String line;
+        while((line  = bfr.readLine())!=null){
+            System.out.println(line);
+        }
 
-
+    }
     @Override
     public void afterPropertiesSet() throws Exception {
-        try{
+        try {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("SensitiveWords.txt");
             InputStreamReader inputStreamReader = new InputStreamReader(is);
             BufferedReader bfr = new BufferedReader(inputStreamReader);
-            String line ;
-            while((line =bfr.readLine())!=null){
+            String line;
+            while ((line = bfr.readLine()) != null) {
                 line = line.trim();
                 addWord(line);
             }
             is.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             System.err.print("敏感词文件读取出错");
         }
-
     }
 
     /**
@@ -141,16 +155,6 @@ public class SensitiveService implements InitializingBean {
         }
 
     }
-
-    public static void main(String[] args) {
-        SensitiveService s = new SensitiveService();
-        s.addWord("色情");
-        s.addWord("呵呵");
-        
-        System.out.print(s.filter("你好色情是不是呵 呵"));
-    }
-
-
 
 
 }
