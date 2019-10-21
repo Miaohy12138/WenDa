@@ -5,6 +5,9 @@
  */
 package com.miaohy.controller;
 
+import com.miaohy.async.EventModel;
+import com.miaohy.async.EventProducer;
+import com.miaohy.async.EventType;
 import com.miaohy.pojo.Comment;
 import com.miaohy.pojo.EntityType;
 import com.miaohy.pojo.HostHolder;
@@ -35,6 +38,8 @@ public class CommentController {
     CommentService commentService;
     @Autowired
     QuestionService questionService;
+    @Autowired
+    EventProducer eventProducer;
     @RequestMapping("/addComment")
     public String addComment(@RequestParam("questionId") int questionId,
                              @RequestParam("content") String content){
@@ -60,6 +65,7 @@ public class CommentController {
             Question question = questionService.selectByPrimaryKey(questionId);
             question.setCommentcount(count);
             questionService.updateByPrimaryKeySelective(question);
+            eventProducer.fireEvent(new EventModel(EventType.COMMENT).setActorId(comment.getUserId()).setEntityId(questionId));
 
         }catch (Exception e){
             logger.error("comment error"+e);

@@ -61,7 +61,6 @@ public class MessageController {
 
             int fromId = hostHolder.getUser().getId();
             int toId = user.getId();
-
             Message msg = new Message();
             msg.setContent(content);
             msg.setCreateddate(new Date());

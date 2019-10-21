@@ -145,13 +145,13 @@
 
   </select>
   <select id="getCommentCount" resultType="int">
-    select count (id) from coder.comment
+    select count(id) from coder.comment
     <where>
       <if test="entityId != null">
-        entity_id = #{entityId,jdbcType=INTEGER}
+        entityId = #{entityId,jdbcType=INTEGER}
       </if>
       <if test="entityType != null">
-        and entity_type = #{entityType,jdbcType=INTEGER}
+        and entityType = #{entityType,jdbcType=INTEGER}
       </if>
     </where>
 

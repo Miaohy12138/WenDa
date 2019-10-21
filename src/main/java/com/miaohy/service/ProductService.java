@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.miaohy.dao.ProductMapper;
 import com.miaohy.pojo.Product;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -19,7 +20,7 @@ public class ProductService{
         return productMapper.deleteByPrimaryKey(pid);
     }
 
-    
+    @Transactional(rollbackFor = RuntimeException.class)
     public int insert(Product record) {
         return productMapper.insert(record);
     }

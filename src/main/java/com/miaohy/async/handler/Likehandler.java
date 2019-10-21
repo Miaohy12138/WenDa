@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 @Component
 public class Likehandler implements EventHandler {
@@ -37,6 +38,7 @@ public class Likehandler implements EventHandler {
         message.setContent("用户" + user.getName()
                 + "赞了你的评论,http://127.0.0.1:8080/question/" + model.getExt("questionId"));
         messageService.insert(message);
+        HashMap map = new HashMap();
     }
 
 

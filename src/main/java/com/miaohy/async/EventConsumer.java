@@ -6,6 +6,7 @@
 package com.miaohy.async;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.miaohy.utils.JedisAdapter;
 import com.miaohy.utils.RedisKeyUtil;
 import org.slf4j.Logger;
@@ -21,60 +22,61 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 @Service
 public class EventConsumer implements InitializingBean, ApplicationContextAware {
 
     private static final Logger logger = LoggerFactory.getLogger(EventConsumer.class);
-    private Map<EventType,List<EventHandler>> config = new HashMap<EventType,List<EventHandler>>();
-    private ApplicationContext applicationContext;
     @Autowired
     JedisAdapter jedisAdapter;
+    private Map<EventType, List<EventHandler>> config = new HashMap<EventType, List<EventHandler>>();
+    private ApplicationContext applicationContext;
 
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        Map<String,EventHandler> beans = applicationContext.getBeansOfType(EventHandler.class);
+        Map<String, EventHandler> beans = applicationContext.getBeansOfType(EventHandler.class);
 
-        if(beans!=null){
-            for(Map.Entry<String,EventHandler> entry :beans.entrySet()){
+        if (beans != null) {
+            for (Map.Entry<String, EventHandler> entry : beans.entrySet()) {
                 List<EventType> eventTypes = entry.getValue().getSupportEventType();
 
-                for(EventType type:eventTypes){
-                    if(!config.containsKey(type)){
-                        config.put(type,new ArrayList<EventHandler>());
-
+                for (EventType type : eventTypes) {
+                    if (!config.containsKey(type)) {
+                        config.put(type, new ArrayList<EventHandler>());
                     }
                     config.get(type).add(entry.getValue());
                 }
             }
         }
 
-        ExecutorService pool = Executors.newSingleThreadExecutor();
-        pool.submit(new Runnable() {
-            @Override
-            public void run() {
-                while(true){
-                    String key = RedisKeyUtil.getEventQueueKey();
-                    List<String> events = jedisAdapter.brpop(0,key);
-                    for(String message :events){
-                        if(message.equals(key)){
-                            continue;
-                        }
-                        EventModel eventModel = JSON.parseObject(message,EventModel.class);
-                        if (!config.containsKey(eventModel.getType())) {
-                            logger.error("不能识别的事件");
-                            continue;
-                        }
-                        for(EventHandler handler : config.get(eventModel.getType())){
-                            handler.doHandle(eventModel);
-                        }
+        ThreadFactory namedThread = new ThreadFactoryBuilder().setNameFormat("event-pool-%d").build();
+        ExecutorService pool2 = new ThreadPoolExecutor(1, 1, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), namedThread);
+        pool2.submit(() -> {
+
+        });
+
+        Thread thread = new Thread(()->{
+            while (true) {
+                String key = RedisKeyUtil.getEventQueueKey();
+                List<String> events = jedisAdapter.brpop(0, key);
+                for (String message : events) {
+                    if (message.equals(key)) {
+                        continue;
+                    }
+                    EventModel eventModel = JSON.parseObject(message, EventModel.class);
+                    if (!config.containsKey(eventModel.getType())) {
+                        logger.error("不能识别的事件");
+                        continue;
+                    }
+                    for (EventHandler handler : config.get(eventModel.getType())) {
+                        handler.doHandle(eventModel);
                     }
                 }
             }
         });
+        thread.start();
     }
 
     @Override

@@ -50,7 +50,6 @@ public class JedisAdapter implements InitializingBean {
             return jedis.srem(key, value);
         } catch (Exception e) {
             logger.error("发生异常:" + e);
-
         } finally {
             if (jedis != null) {
                 jedis.close();
@@ -231,5 +230,10 @@ public class JedisAdapter implements InitializingBean {
         return null;
     }
 
-
+    public static void main(String[] args) {
+        Jedis jedis = new Jedis("127.0.0.1",6379);
+        jedis.lpush("testList","1","2","3","4");
+        Object obj = jedis.lrange("testList",0, -1);
+        System.out.println(obj);
+    }
 }

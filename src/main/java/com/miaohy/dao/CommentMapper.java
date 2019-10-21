@@ -2,6 +2,7 @@ package com.miaohy.dao;
 
 import com.miaohy.pojo.Comment;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public interface CommentMapper {
 
     int updateByPrimaryKey(Comment record);
 
-    int getCommentCount(int EntityId,int EntityType);
+    int getCommentCount(@Param("entityId") int EntityId, @Param("entityType") int EntityType);
 
 
     List<Comment> getCommentList(Comment comment);
